@@ -1,0 +1,124 @@
+{
+  "1":{
+     "files": ["model",  "../work/model/5_3/患者年齢.csv", "../work/model/0_2/全種結合_入退院日.csv"],
+     "columns": [
+         ["カルテ番号等", "_date", "年齢"],
+         ["入院年月日", "退院年月日","入院年月日_dt", "退院年月日_dt"]
+     ],
+    "targets": ["113006910","190218070"],
+    "option_pattern": ["","monthly"],
+    "items": "max"
+  },
+  "2":{
+     "files": ["model", "../work/model/5_3/JCSレベル.csv", "../work/model/0_2/全種結合_入退院日.csv"],
+     "columns": [
+         ["カルテ番号等", "_date", "JCSレベル_群"],
+         ["入院年月日", "退院年月日","入院年月日_dt", "退院年月日_dt"]
+     ],
+    "targets": ["820100017"],
+    "option_pattern": [""],
+    "items": "max"
+  },
+  "3":{
+     "files": ["model",  "../work/model/5_3/公費法別番号.csv", "../work/model/0_2/全種結合_入退院日.csv"],
+     "columns": [
+         ["カルテ番号等", "_date"],
+         ["入院年月日", "退院年月日","入院年月日_dt", "退院年月日_dt"]
+     ],
+    "targets": [],
+    "option_pattern": [],
+    "items": ""
+  },
+  "4":{
+     "files": ["model",  "../work/model/5_3/悪性腫瘍.csv", "../work/model/0_2/全種結合_入退院日.csv"],
+     "columns": [
+         ["カルテ番号等", "_date","悪性腫瘍特異物質治療管理料_同月算定回数"],
+         ["入院年月日", "退院年月日","入院年月日_dt", "退院年月日_dt"]
+     ],
+    "targets": ["113001470"],
+    "option_pattern": [""],
+    "items": ""
+  },
+  "5":{
+     "files": ["model", "../work/model/5_3/2_予定・緊急入院区分.csv", "../work/model/0_2/全種結合_入退院日.csv"],
+     "columns": [
+         ["カルテ番号等", "_date"],
+         ["入院年月日", "退院年月日","入院年月日_dt", "退院年月日_dt"]
+     ],
+    "targets": ["113013810", "113013710", "820100016", "820100017", "820100018-1","820100018-2", "820100024", "150225310", "820100019", "820100020", "820100023", "113036510", "150425670", "150435770"],
+    "option_pattern": ["","","","","","","","","","",""],
+    "items": ""
+  },
+
+  "6":{
+     "files": ["model",  "../work/model/5_3/",  "../work/model/0_2/全種結合_入退院日.csv"],
+     "columns": [
+         ["カルテ番号等", "_date","入院中算定回数"],
+         ["カルテ番号等", "_date"]
+     ],
+    "targets": ["113011710", "190120610", "113006910", "190128110", "190193110", "190193510", "113017610-113017710", "113011310", "113029170", "113036510", "150425670", "150435770"]
+  },
+
+  "7":{
+     "files": ["model",  "../work/model/0_2/全種結合_入退院日.csv", "../work/model/0_2/全種結合_入退院日.csv"],
+     "columns": [
+         ["カルテ番号等", "_date","入院日数カウント"],
+         ["入院年月日", "退院年月日","入院年月日_dt", "退院年月日_dt"]
+     ],
+    "targets": [],
+    "option_pattern": [],
+    "items": "max"
+  },
+  "8":{
+     "files": ["model",  "../work/model/5_3/院内トリアージ_カルテ.csv", "../work/model/0_2/全種結合_入退院日.csv"],
+     "columns": [
+         ["カルテ番号等", "_date","トリアージレベル_フラグ"],
+         ["入院年月日", "退院年月日","入院年月日_dt", "退院年月日_dt"]
+     ],
+    "targets": ["113013710"],
+    "option_pattern": ["calculation"],
+    "items": ""
+  },
+  "9":{
+     "files": ["model",  "../work/model/5_3/院内感染_検査記録.csv", "../work/model/0_2/全種結合_入退院日.csv"],
+     "columns": [
+         ["カルテ番号等", "_date"],
+         ["入院年月日", "退院年月日","入院年月日_dt", "退院年月日_dt"]
+     ],
+    "targets": ["150297990"],
+    "option_pattern": [""],
+    "items": ""
+  },
+  "10":{
+     "files": ["model",  "../work/model/5_3/介護支援_連携指導料.csv", "../work/model/0_2/全種結合_入退院日.csv"],
+     "columns": [
+         ["カルテ番号等", "_date"],
+         ["入院年月日", "退院年月日","入院年月日_dt", "退院年月日_dt"]
+     ],
+    "targets": ["113011710"],
+    "option_pattern": [""],
+    "items": ""
+  },
+  "11":{
+     "files": ["model",  "../work/model/0_2/全種結合_入退院日.csv"],
+     "columns": [
+         ["入院年月日", "退院年月日","入院年月日_dt", "退院年月日_dt"],
+         ["カルテ番号等", "_date"]
+     ],
+    "targets": [],
+    "bunsyo": "D001"
+  },
+  "_comment": {
+      "1": "age",
+      "2": "jcs",
+      "3": "ko",
+      "4": "malignant_tumor",
+      "5": "hospitalization_category",
+      "6": "calculations_count",
+      "7": "days_count",
+      "8": "triage",
+      "9": "inspection_item",
+      "10": "care_support",
+      "11": "special_meal"
+  }
+}

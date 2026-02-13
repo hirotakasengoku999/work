@@ -1,0 +1,50 @@
+{
+  "1":{
+     "files": ["../work/model/0_1/", "../work/model/2_3/全種類結合.csv", "../work/model/5_3/患者年齢.csv"],
+     "columns": [
+         ["カルテ番号等", "_date"],
+         ["カルテ番号等", "生年月日"]
+     ]
+  },
+  "3":{
+     "files": ["../work/model/0_1/", "../work/model/2_3/全種類結合.csv", "../work/model/5_3/公費法別番号.csv"],
+     "columns": [
+         ["カルテ番号等", "_date"],
+         ["負担者番号"]
+     ]
+  },
+  "4":{
+     "files": ["../work/model/3_2/診療行為.pickle", "../work/model/5_3/悪性腫瘍.csv"],
+     "columns": [
+         ["カルテ番号等", "_date"],
+         ["悪性腫瘍特異物質治療管理料_同月算定回数"],
+         ["113001310-113002110"]
+     ]
+  },
+  "5":{
+     "files": ["../work/model/0_2/1_予定・緊急入院区分.csv", "../work/model/2_3/全種類結合.csv", "../work/model/5_3/2_予定・緊急入院区分.csv"],
+     "columns": [
+         ["カルテ番号等", "_date"],
+         ["予定・緊急入院区分", "入院年月日", "退院年月日"],
+         ["予定入院", "緊急入院", "緊急入院（2以外の場合）"]
+     ]
+  },
+  "6":{
+     "files": ["../work/model/0_2/全種結合_入退院日.csv", "../work/model/3_2/診療行為.pickle", "../work/model/2_3/input_date.csv", "../work/model/5_3/", "calculations_count_info.csv"],
+     "columns": [
+         ["カルテ番号等", "_date"],
+         ["入院年月日", "退院年月日","入院年月日_dt", "退院年月日_dt"],
+         ["入院中フラグ", "入院中算定回数"]
+    ],
+    "targets": ["113017610-113017710", "113011710", "190120610", "113006910", "190128110", "190193110", "190193510", "113011310", "113029170", "113036510", "150425670", "150435770"],
+    "nyuin_kaisu_list": [2, 2, 1, 1, 20, 14, 14, 1, 1, 1, 1, 1]
+  },
+  "_comment": {
+      "1": "patient age",
+      "3": "public number",
+      "4": "malignant tumor",
+      "5": "hospitalization category",
+      "6": "calculation count"
+  }
+}
+
