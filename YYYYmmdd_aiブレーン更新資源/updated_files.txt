@@ -1,0 +1,6 @@
+aireceipt/src/model/f5_individual_correspondence/r_rule_info.pyc
+aireceiptapp/insert_results_word_replacement.py
+aireceiptapp/update_chart.py
+aireceiptapp/views.py
+aireceiptapp/write_db_csv.py
+tests/test_2024.py
