@@ -94,20 +94,23 @@ def aireceipt_karte_pp(input_path, output_path):
         df = df.loc[:, ~(df.columns.str.startswith('Unnamed'))]
 
         # 共通
-        df = RenameColum(df, {'患者番号': karute, '記事日時': data_column_name, '手術日付': data_column_name, '手術日': data_column_name, '実施日': data_column_name, '手術実施日': data_column_name, '採取日': data_column_name, '科名': '診療科'})
+        df = RenameColum(df, {'患者番号': karute, '記事日時': data_column_name, '手術日付': data_column_name, '実施日': data_column_name, '手術実施日': data_column_name, '採取日': data_column_name, '科名': '診療科'})
         if basename.startswith('手術歴'):
             basename = '手術歴'
             df = Grouping(df, 'カルテ内容', ['手術項目名称', '使用機器'])
-            df = RenameColum(df, {'開始時間': '手術開始時間'})
+            df = RenameColum(df, {'手術開始時刻': '手術開始時間'})
             df['手術開始時間'] = df['手術開始時間'].str.slice(0, 5)
             df = df[[karute, data_column_name, '手術開始時間', '体位', 'カルテ内容']]
             df['手術開始時間'] = df['手術開始時間'].str.strip()
-            df['手術開始時間'] = pd.to_datetime(df['手術開始時間']).dt.strftime('%H:%M')
+            df = df[df['手術開始時間'] != '']
+            df['手術開始時間'] = pd.to_datetime(df['手術開始時間'], format="%H%M").dt.strftime('%H:%M')
             df['手術開始時間'] = pd.to_datetime(df['手術開始時間'], format='%H:%M')
 
         elif basename.startswith('手術記録'):
             basename = '手術記録'
             df = Grouping(df, 'カルテ内容', ['病名', '記事日時', '記事内容（全文）'])
+            df = df[[karute, '手術日', 'カルテ内容']]
+            df = RenameColum(df, {'手術日': data_column_name})
             df = df[[karute, data_column_name, 'カルテ内容']]
 
         elif basename.startswith('医師記録'):
