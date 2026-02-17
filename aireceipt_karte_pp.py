@@ -108,10 +108,10 @@ def aireceipt_karte_pp(input_path, output_path):
 
         elif basename.startswith('手術記録'):
             basename = '手術記録'
-            df = Grouping(df, 'カルテ内容', ['病名', '記事日時', '記事内容（全文）'])
+            df = Grouping(df, 'カルテ内容', ['病名', '記事内容（全文）'])
             df = df[[karute, '手術日', 'カルテ内容']]
             df = RenameColum(df, {'手術日': data_column_name})
-            df = df[[karute, data_column_name, 'カルテ内容']]
+            df = df[df[data_column_name] != '']
 
         elif basename.startswith('医師記録'):
             basename = '医師記録'
