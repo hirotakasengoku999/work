@@ -97,14 +97,17 @@ def aireceipt_karte_pp(input_path, output_path):
         # 共通
         df = RenameColum(df, {
             '患者番号': karute,
+            'patientno': karute,
             '記事日時': data_column_name,
             '手術日付': data_column_name,
             '実施日': data_column_name,
             '手術実施日': data_column_name,
             '採取日': data_column_name,
             '期間開始日時': data_column_name,
+            'validstarttime': data_column_name,
             '科名': dept_column_name,
-            '科名称': dept_column_name
+            '科名称': dept_column_name,
+            'departmentname': dept_column_name
         })
 
         if basename.startswith('手術歴'):
@@ -217,6 +220,12 @@ def aireceipt_karte_pp(input_path, output_path):
             basename = '医事課指定_作成文書（認知症ケア加算対象者スコア）'
             df = df[df['文書テキストデータ（全文）'] != ""]
             df = Grouping(df, 'カルテ内容', ['文書名', '文書テキストデータ（全文）'])
+            df['カルテ内容'] = df['カルテ内容'].str.replace(" ", "").str.replace("　", "")
+            df = df[[karute, data_column_name, dept_column_name, 'カルテ内容']]
+
+        elif basename.startswith('付箋'):
+            basename = '付箋'
+            df = Grouping(df, 'カルテ内容', ['tittletext', 'messagetext_plain'])
             df['カルテ内容'] = df['カルテ内容'].str.replace(" ", "").str.replace("　", "")
             df = df[[karute, data_column_name, dept_column_name, 'カルテ内容']]
 
