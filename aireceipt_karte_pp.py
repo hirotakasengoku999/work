@@ -141,14 +141,14 @@ def aireceipt_karte_pp(input_path, output_path):
         ):
             basename = '検温表_肺血栓予防管理料_DVT予防'
             if '実施進捗' in df.columns:
-                df = df[df['実施進捗'] == '実施済み']
+                df = df[df['実施進捗'].str.startswith('実施済')]
             df = Grouping(df, 'カルテ内容', ['測定値', '実施コメント'])
             df = df[[karute, data_column_name, 'カルテ内容']]
 
         elif basename.startswith('検温表_ドレーン法_胸腔排液量'):
             basename = '検温表_ドレーン法_胸腔排液量'
             if '実施進捗' in df.columns:
-                df = df[df['実施進捗'] == '実施済み']
+                df = df[df['実施進捗'].str.startswith('実施済')]
             df = Grouping(df, 'カルテ内容', ["項目名称１", "測定値", "実施コメント", "部位名称", "方向名称"])
             df['カルテ内容'] = df['カルテ内容'].str.replace(" ", "").str.replace("　", "")
             df = df[[karute, data_column_name, 'カルテ内容']]
@@ -156,7 +156,7 @@ def aireceipt_karte_pp(input_path, output_path):
         elif basename.startswith('検温表_中心静脈注射_カテーテル長'):
             basename = '検温表_中心静脈注射_カテーテル長'
             if '実施進捗' in df.columns:
-                df = df[df['実施進捗'] == '実施済み']
+                df = df[df['実施進捗'].str.startswith('実施済')]
             df = Grouping(df, 'カルテ内容', ["項目名称１", "測定値", "実施コメント", "部位名称", "方向名称"])
             df['カルテ内容'] = df['カルテ内容'].str.replace(" ", "").str.replace("　", "")
             df = df[[karute, data_column_name, 'カルテ内容']]
@@ -164,7 +164,7 @@ def aireceipt_karte_pp(input_path, output_path):
         elif basename.startswith('検温表_人工呼吸_換気量'):
             basename = '検温表_人工呼吸_換気量'
             if '実施進捗' in df.columns:
-                df = df[df['実施進捗'] == '実施済み']
+                df = df[df['実施進捗'].str.startswith('実施済')]
             df = Grouping(df, 'カルテ内容', ["項目名称１", "測定値", "実施コメント", "部位名称", "方向名称"])
             df['カルテ内容'] = df['カルテ内容'].str.replace(" ", "").str.replace("　", "")
             df = df[[karute, data_column_name, 'カルテ内容']]
@@ -172,21 +172,21 @@ def aireceipt_karte_pp(input_path, output_path):
         elif basename.startswith('検温表_局所陰圧閉鎖処置_陰圧閉鎖処置'):
             basename = '検温表_局所陰圧閉鎖処置_陰圧閉鎖処置'
             if '実施進捗' in df.columns:
-                df = df[df['実施進捗'] == '実施済み']
+                df = df[df['実施進捗'].str.startswith('実施済')]
             df = Grouping(df, 'カルテ内容', ["項目名称１", "測定値", "実施コメント", "部位名称", "方向名称"])
             df = df[[karute, data_column_name, 'カルテ内容']]
 
         elif basename.startswith('検温表_精密持続点滴_ME点検'):
             basename = '検温表_精密持続点滴_ME点検'
             if '実施進捗' in df.columns:
-                df = df[df['実施進捗'] == '実施済み']
+                df = df[df['実施進捗'].str.startswith('実施済')]
             df = Grouping(df, 'カルテ内容', ["項目名称１", "測定値", "実施コメント", "部位名称", "方向名称"])
             df = df[[karute, data_column_name, 'カルテ内容']]
 
         elif basename.startswith('検温表_褥瘡_褥瘡処置'):
             basename = '検温表_褥瘡_褥瘡処置'
             if '実施進捗' in df.columns:
-                df = df[df['実施進捗'] == '実施済み']
+                df = df[df['実施進捗'].str.startswith('実施済')]
             df = Grouping(df, 'カルテ内容', ["項目名称１", "測定値", "実施コメント", "部位名称", "方向名称"])
             df = df[[karute, data_column_name, 'カルテ内容']]
 
