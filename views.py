@@ -668,9 +668,22 @@ def run_create_model(request):
       except:
         pass
 
-  # モデル作成タスクを非同期で起動
-  async_task('aireceiptapp.tasks.create_model_task', base, group="create_model_task", name="create_model_task_lock")
+  # モデル作成をタスクスケジューラに登録
+  cmd_file = "RegistTask.bat"
+  regist_task_dir = os.path.join(base, "regist_task")
+  date_today = datetime.date.today()
+  date_today_str = date_today.strftime('%Y-%m-%d')
+  date_time = datetime.datetime.now()
+  date_time_2min = date_time + datetime.timedelta(minutes=2)
+  date_time_2min_str = date_time_2min.strftime('%H:%M')
+  codes = ''
+  command = cmd_file + " " + "preprocessing_model" + " " + date_today_str + " " + date_time_2min_str + " " + codes
+  os.chdir(regist_task_dir)
+  os.system(command)
+  os.chdir(base)
 
+  # ステータスを「wait」にする
+  get_hanyo.update_proc_flag('model', 2)
   logger.info(' 利用者ID' + str(request.user) + 'がモデル作成を開始しました。')
   # 処理中のプロセス名にレセプト前処理を登録する
   request_sql = "UPDATE aireceiptapp_hanyo SET CONTROLTEXT2 = 'run_receipt_pp' WHERE CODE1 = 'proc' AND CODE2 = 'model'"
@@ -801,8 +814,20 @@ def run_predict(request):
       except:
         pass
 
-  # 検知処理タスクを非同期で起動
-  async_task('aireceiptapp.tasks.predict_task', base, group="predict_task", name="predict_task_lock")
+  # 検知をタスクスケジューラに登録
+  cmd_file = "RegistTask.bat"
+  regist_task_dir = os.path.join(base, "regist_task")
+  date_today = datetime.date.today()
+  date_today_str = date_today.strftime('%Y-%m-%d')
+  date_time = datetime.datetime.now()
+  date_time_2min = date_time + datetime.timedelta(minutes=2)
+  date_time_2min_str = date_time_2min.strftime('%H:%M')
+  codes = ''
+  command = cmd_file + " " + "preprocessing_predict" + " " + date_today_str + " " + date_time_2min_str + " " + codes
+  os.chdir(regist_task_dir)
+  logger.info(f'「{command}」の内容でタスクに登録します')
+  os.system(command)
+  os.chdir(base)
 
   logger.info(' 利用者ID' + str(request.user) + 'が検知を開始しました。')
 
@@ -1347,7 +1372,6 @@ def test_paginator(request):
     request_sql += add_proba_sql
   request_sql += " ORDER BY CODE"
   objects = paginator.get_page(request_sql)
-  print(request_sql)
 
   context = {
     'objects' : objects,
