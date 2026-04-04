@@ -1,0 +1,257 @@
+{% extends 'base.html' %}
+
+{% block customcss %}
+
+{% load static %}
+<link rel="stylesheet" type="text/css" href="{% static 'css/tempusdominus-bootstrap-4.css' %}">
+<link rel="stylesheet" type="text/css" href="{% static 'css/tabulator.css' %}">
+{% endblock customcss %}
+
+{% block header %}
+<title>サマリー</title>
+{% load aireceiptapp_extras %}
+{% endblock header %}
+
+{% block button_area %}
+<h4 style="text-align: center; margin-top: 1vh;">サマリー</h4><hr noshade style="margin: 0;">
+
+<!-- ボタンエリア -->
+<div class="container-fluid text-center button_area">
+  <button class="btn btn_submit" id="download-chart" type="button" style="margin: 0.1% 0.5% 0.2% 0.5%; width: 8vw; padding:0.1% 1.0% 0 1.0%;"><i class="fas fa-chart-bar"></i>  グラフ出力</button>
+  <button class="btn btn_excel" id="download-xlsx" type="button" style="margin: 0.1% 0.5% 0.2% 0.5%; width: 8vw; padding:0.1% 1.0% 0 1.0%;"><i class="far fa-file-excel"></i>  表出力</button>
+  <a href="{% url 'indexview' %}" class="btn btn_close" style="margin: 0.1% 0.5% 0.2% 0.5%; padding:0.1% 1.0% 0 1.0%; width: 8vw;"><i class="fas fa-times"></i>  閉じる</a>
+</div>
+{% endblock button_area %}
+
+{% block content %}
+<div class="container-fluid">
+  <div class="row">
+    <nav class="col-md-2 d-none d-md-block bg-light sidebar" style="background: linear-gradient(#EEEEEE, 40%, #EEEEEE); background: -ms-linear-gradient(top, #EEEEEE, #EEEEEE); border-bottom: 0px none; margin: 0; padding: 0;">
+          <div class="position-sticky pt-3">
+            <h5 class="sidebar-heading d-flex justify-content-between align-items-center px-3 mt-4 mb-1 text-muted">
+              <span><i class="far fa-calendar-alt mr-2"></i>月別</span>
+            </h5>
+            <ul class="nav flex-column">
+              <li class="nav-item" style="border: none; text-align: left;">
+                <a class="nav-link active" aria-current="page" href="{% url 'chart' 'CODENAME' %}">
+                  算定項目別
+                </a>
+              </li>
+              <li class="nav-item" style="border: none; text-align: left;">
+                <a class="nav-link" href="{% url 'chart' 'DEPT' %}">
+                  <span data-feather="file"></span>
+                  診療科別
+                </a>
+              </li>
+              <li class="nav-item" style="border: none; text-align: left;">
+                <a class="nav-link" href="{% url 'chart' 'WARD' %}">
+                  <span data-feather="shopping-cart"></span>
+                  病棟別
+                </a>
+              </li>
+            </ul>
+
+            <h5 class="sidebar-heading d-flex justify-content-between align-items-center px-3 mt-4 mb-1 text-muted">
+              <span><i class="fas fa-chart-line mr-2"></i>時系列</span>
+            </h5>
+            <ul class="nav flex-column">
+              <li class="nav-item" style="border: none; text-align: left;">
+                <a class="nav-link active" aria-current="page" href="{% url 'request_amount' %}">
+                  請求額
+                </a>
+              </li>
+              <li class="nav-item" style="border: none; text-align: left;">
+                <a class="nav-link active" aria-current="page" href="{% url 'line_chart' 'total_chart' %}">
+                  追加算定件数
+                </a>
+              </li>
+            </ul>
+          </div>
+    </nav>
+    <main class="col-md-9 ml-sm-auto col-lg-10 pt-3 px-4">
+      <div class="mt-2 mb-5 shadow-sm">
+        <canvas id="CountBarChart"></canvas>
+      </div>
+      <div class="container">
+        <table class="table table-bordered table-striped shadow" id="result-table" style="margin-bottom: 5%;">
+          <thead class="text-white" style="background: linear-gradient(#5D99FF, 50%, #4169E1);">
+            <tr>
+              <th class="text-center">請求月</th>
+              <th class="text-center">請求額</th>
+              <th class="text-center">前年差</th>
+              <th class="text-center">前年対比</th>
+              <th class="text-center">前月差</th>
+              <th class="text-center">前月対比</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for t in table_obj %}
+            <tr>
+              <td class="text-center">{{ t.SEIKYUGETSU }}</td>
+              <td class="text-right">{{ t.COUNTS }}</td>
+              {% if '-' in t.DIFFERENCE %}
+                <td class="text-right text-danger">{{ t.DIFFERENCE }}</td>
+                <td class="text-right text-danger">{{ t.RATIO }}</td>
+              {% elif t.DIFFERENCE == '0' %}
+                <td class="text-right">{{ t.DIFFERENCE }}</td>
+                <td class="text-right">{{ t.RATIO }}</td>
+              {% else %}
+                <td class="text-right text-primary">{{ t.DIFFERENCE }}</td>
+                <td class="text-right text-primary">{{ t.RATIO }}</td>
+              {% endif %}
+              {% if '-' in t.DIFFERENCE_MONTH %}
+                <td class="text-right text-danger">{{ t.DIFFERENCE_MONTH }}</td>
+                <td class="text-right text-danger">{{ t.RATIO_MONTH }}</td>
+              {% elif t.DIFFERENCE_MONTH == '0' %}
+                <td class="text-right">{{ t.DIFFERENCE_MONTH }}</td>
+                <td class="text-right">{{ t.RATIO_MONTH }}</td>
+              {% else %}
+                <td class="text-right text-primary">{{ t.DIFFERENCE_MONTH }}</td>
+                <td class="text-right text-primary">{{ t.RATIO_MONTH }}</td>
+              {% endif %}
+              
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </main>
+  </div>
+  <a id="download_link"></a>
+</div>
+{% endblock %}
+
+{% block script %}
+{% load static %}
+<script type="text/javascript" src="{% static 'js/moment-with-locales.min.js' %}"></script>
+<script type="text/javascript" src="{% static 'js/tempusdominus-bootstrap-4.js' %}"></script>
+<script type="text/javascript" src="{% static 'js/datetimepicker_original.js' %}"></script>
+<script type="text/javascript" src="{% static 'js/polyfill.min.js' %}"></script>
+<script type="text/javascript" src="{% static 'js/tabulator.js' %}"></script>
+<script type="text/javascript" src="{% static 'js/xlsx.full.min.js' %}"></script>
+<script type="text/javascript" src="{% static 'js/FileSaver.min.js' %}"></script>
+<script type="text/javascript" src="{% static 'js/chart_original/Chart.min.js' %}"></script>
+<script type="text/javascript">
+let obj_json = {{ obj_json|safe }};
+var ctx = document.getElementById("CountBarChart");
+const labels = obj_json.seikyunengetsu_list;
+const data = {
+  labels: obj_json.active_s_list,
+  datasets: [{
+    label: '請求額',
+    data: obj_json.active_c_list,
+    datalabels: {
+            align: 'center',
+        },
+    backgroundColor: 'rgba(255, 99, 132, 0.7)',
+    borderColor: 'rgb(255, 99, 132)',
+  },{
+    label: '前年同月請求額',
+    data: obj_json.before_c_list,
+    datalabels: {
+            align: 'center',
+        },
+    backgroundColor: 'rgba(54, 162, 235, 0.2)',
+    borderColor: 'rgba(54, 162, 235, 1)',
+  }],
+};
+
+const options = {
+    scales: {
+      yAxes: [
+          {
+              ticks: {
+                  callback: function(label, index, labels) {
+                      return label.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',') +' 円';
+                  }
+              }
+          }
+      ]
+    },
+  }
+
+  // ▼ これを追加
+  options.tooltips = {
+    // 吹き出しの背景色
+    backgroundColor: "rgba(19, 56, 95, 0.9)",
+    // マーカーによって変更するもの
+    callbacks: {
+      // ツールチップの表示内容
+      label: function(tooltipItem, context) {
+        let detail_name = context.datasets[tooltipItem.datasetIndex].label;
+        let detail_count = tooltipItem.value;
+        result = "";
+        if(detail_count > 0) {
+          result = detail_name + " : " + detail_count.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',') +' 円';
+        };
+        return result;
+      }
+    }
+  };
+
+var ex_chart = new Chart(ctx, {
+  type: 'bar',
+  data: data,
+  options:options,
+});
+
+var canvas = document.getElementById('CountBarChart');
+var downloadLink = document.getElementById('download_link');
+var filename = 'グラフ.png';
+
+/*  テストのために描画  */
+var ctx = canvas.getContext('2d');
+ctx.fillStyle = '#eee';
+ctx.fillRect(0, 0, 400, 200);
+ctx.font = '18px sans-serif';
+ctx.fillStyle = '#e00';
+ctx.fillText('このキャンバスを画像でダウンロードします', 25, 100);
+
+var button = document.getElementById('download-chart');
+button.addEventListener('click', function(){
+
+    if (canvas.msToBlob) {
+        var blob = canvas.msToBlob();
+        window.navigator.msSaveBlob(blob, filename);
+    } else {
+        downloadLink.href = canvas.toDataURL('image/png');
+        downloadLink.download = filename;
+        downloadLink.click();
+    }
+
+});
+
+document.getElementById('download-xlsx').addEventListener('click', function () {
+  var wopts = {
+    bookType: 'xlsx',
+    bookSST: false,
+    type: 'binary'
+  };
+
+    var workbook = {SheetNames: [], Sheets: {}};
+
+  document.querySelectorAll('table').forEach(function (currentValue, index) {
+    var n = currentValue.getAttribute('data-sheet-name');
+    if (!n) {
+      n = '請求額表';
+    }
+    workbook.SheetNames.push(n);
+    workbook.Sheets[n] = XLSX.utils.table_to_sheet(currentValue, wopts);
+  });
+
+  var wbout = XLSX.write(workbook, wopts);
+
+  function s2ab(s) {
+    var buf = new ArrayBuffer(s.length);
+    var view = new Uint8Array(buf);
+    for (var i = 0; i != s.length; ++i) {
+      view[i] = s.charCodeAt(i) & 0xFF;
+    }
+    return buf;
+  }
+
+  saveAs(new Blob([s2ab(wbout)], {type: 'application/octet-stream'}), '請求額表.xlsx');
+}, false);
+
+</script>
+{% endblock script %}

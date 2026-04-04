@@ -1,0 +1,45 @@
+{% extends 'base.html' %}
+{% block header %}
+    <title>{{ menu_info.3.menu_name }}</title>
+{% endblock %}
+
+{% block button_area %}
+<div class="container-fluid text-center">
+<h4 style="text-align: center; margin-top: 1vh;">{{ menu_info.3.menu_name }}</h4><hr noshade style="margin: 0;">
+<!-- ボタンエリア -->
+  <div class="container-fluid text-center button_area">
+    <a href="{% url 'indexview' %}" class="btn btn_close" style="margin: 0.1% 0.5% 0.2% 0.5%; padding:0.1% 1.5% 0.1% 1.5%;"><i class="fas fa-times"></i> 閉じる</a>
+  </div>
+</div>
+{% endblock button_area %}
+
+{% block content %}
+<div class="container-fluit text-center mt-5">
+  {% if user_authority != "1" %}
+  <p>
+    <a href="{% url 'user_list' %}" class="btn btn_maintenance btn-lg w-25" tabindex="-1" role="button" aria-disabled="true"><i class="fas fa-user"></i> 利用者</a>
+  </p>
+  {% endif %}
+  {% if user_authority == "9" %}
+  <p>
+    <a href="{% url 'hanyoview' %}" class="btn btn_maintenance btn-lg w-25" tabindex="-1" role="button" aria-disabled="true"><i class="fas fa-cog"></i> 設定</a>
+  </p>
+  <p>
+    <a href="{% url 'karte_file' ' '%}" class="btn btn_maintenance btn-lg w-25" tabindex="-1" role="button" aria-disabled="true"><i class="fas fa-file-medical"></i> カルテファイル</a>
+  </p>
+  <p>
+    <a href="{% url 'result_column_list' %}" class="btn btn_maintenance btn-lg w-25" tabindex="-1" role="button" aria-disabled="true"><i class="fas fa-table"></i> 結果照会列名設定</a>
+  </p>
+
+  {% endif %}
+  <p>
+    <a href="{% url 'maintenance_item' %}" class="btn btn_maintenance btn-lg w-25" tabindex="-1" role="button" aria-disabled="true"><i class="fas fa-file-export"></i> 算定項目</a>
+  </p>
+  <p>
+    <a href="{% url 'userlog' %}" class="btn btn_log btn-lg w-25" tabindex="-1" role="button" aria-disabled="true"><i class="fas fa-history"></i> ログ照会</a>
+  </p>
+  <p>
+    <a href="{% url 'SystemLog' %}" class="btn btn_log btn-lg w-25" tabindex="-1" role="button" aria-disabled="true"><i class="fas fa-history"></i> ログ照会（詳細）</a>
+  </p>
+</div>
+{% endblock content %}

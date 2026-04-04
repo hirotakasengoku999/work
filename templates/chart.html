@@ -1,0 +1,369 @@
+{% extends 'base.html' %}
+
+{% block customcss %}
+
+{% load static %}
+<link rel="stylesheet" type="text/css" href="{% static 'css/tempusdominus-bootstrap-4.css' %}">
+<link rel="stylesheet" type="text/css" href="{% static 'css/tabulator.css' %}">
+
+{% endblock customcss %}
+
+{% block header %}
+<title>サマリー</title>
+{% load aireceiptapp_extras %}
+{% endblock header %}
+
+{% block button_area %}
+<h4 style="text-align: center; margin-top: 1vh;">サマリー</h4><hr noshade style="margin: 0;">
+
+<!-- ボタンエリア -->
+<div class="container-fluid text-center button_area">
+  <button class="btn btn_submit" value="表示" id="selectresultview" style="margin: 0.1% 0.5% 0.2% 0.5%; padding:0.1% 1.5% 0.1% 1.5%; width:9vw;"><i class="fas fa-search"></i>  表示</button>
+  <button class="btn btn_submit" id="download-chart" type="button" style="margin: 0.1% 0.5% 0.2% 0.5%; padding:0.1% 1.5% 0.1% 1.5%; width:9vw;"><i class="fas fa-chart-bar"></i>  グラフ出力</button>
+  <button class="btn btn_excel" id="download-xlsx" type="button" style="margin: 0.1% 0.5% 0.2% 0.5%; padding:0.1% 1.5% 0.1% 1.5%; width:9vw;"><i class="far fa-file-excel"></i> 表出力</button>
+  <a href="{% url 'indexview' %}" class="btn btn_close" style="margin: 0.1% 0.5% 0.2% 0.5%; padding:0.1% 1.5% 0 1.5%; width:9vw;"><i class="fas fa-times"></i> 閉じる</a>
+</div>
+{% endblock button_area %}
+
+{% block content %}
+<div class="container-fluid" id="chartbody">
+  <div class="row">
+    <nav class="col-md-2 d-none d-md-block bg-light sidebar" style="background: linear-gradient(#EEEEEE, 40%, #EEEEEE); background: -ms-linear-gradient(top, #EEEEEE, #EEEEEE); border-bottom: 0px none; margin: 0; padding: 0;">
+          <div class="position-sticky pt-3">
+            <h5 class="sidebar-heading d-flex justify-content-between align-items-center px-3 mt-4 mb-1 text-muted">
+              <span><i class="far fa-calendar-alt mr-2"></i>月別</span>
+            </h5>
+            <ul class="nav flex-column">
+              <li class="nav-item" style="border: none; text-align: left;">
+                <a class="nav-link active" aria-current="page" href="{% url 'chart' 'CODENAME' %}">
+                  算定項目別
+                </a>
+              </li>
+              <li class="nav-item" style="border: none; text-align: left;">
+                <a class="nav-link" href="{% url 'chart' 'DEPT' %}">
+                  <span data-feather="file"></span>
+                  診療科別
+                </a>
+              </li>
+              <li class="nav-item" style="border: none; text-align: left;">
+                <a class="nav-link" href="{% url 'chart' 'WARD' %}">
+                  <span data-feather="shopping-cart"></span>
+                  病棟別
+                </a>
+              </li>
+            </ul>
+
+            <h5 class="sidebar-heading d-flex justify-content-between align-items-center px-3 mt-4 mb-1 text-muted">
+              <span><i class="fas fa-chart-line mr-2"></i>時系列</span>
+            </h5>
+            <ul class="nav flex-column">
+              <li class="nav-item" style="border: none; text-align: left;">
+                <a class="nav-link active" aria-current="page" href="{% url 'request_amount' %}">
+                  請求額
+                </a>
+              </li>
+              <li class="nav-item" style="border: none; text-align: left;">
+                <a class="nav-link active" aria-current="page" href="{% url 'line_chart' 'total_chart' %}">
+                  追加算定件数
+                </a>
+              </li>
+            </ul>
+          </div>
+    </nav>
+    <main class="col-md-9 ml-sm-auto col-lg-10 pt-3 px-4">
+      <div>
+        <form method="post" action="{% url 'chart' chart_category %}" class="bg-light pt-2 pl-1 pr-1 pb-1 shadow-sm">
+          {% csrf_token %}
+            <div class="ml-3" style="float: left;">
+              {% if chart_category == 'CODENAME' %}
+              <h3>算定項目別</h3>
+              {% elif chart_category == 'DEPT' %}
+              <h3>診療科別</h3>
+              {% elif chart_category == 'WARD' %}
+              <h3>病棟別</h3>
+              {% endif %}
+            </div>
+            <div class="row">
+              <div class="ml-3 col-3">
+                <div class="input-group" id="datetimepicker-seikyugetsu"  data-target-input="nearest">
+                  <div class="input-group-prepend">
+                    <div class="input-group-text">{{ form.seikyunengetsu.label }}</div>              
+                  </div>
+                  {{form.seikyunengetsu}}
+                  <div class="input-group-append" data-target="#datetimepicker-seikyugetsu" data-toggle="datetimepicker">
+                    <div class="input-group-text"><i class="fas fa-calendar-alt"></i></div>
+                  </div>
+                </div>
+              </div>
+              <div class="col">
+                  {{ form.point_count }}
+              </div>
+              <div style="visibility: hidden;">
+              <input class="mt-1 btn_display pt-1 pb-1 pl-3 pr-3 border border-success" type="submit" name="" id="submit_search" value="表示" style="visibility: hidden;">
+              </div>
+            </div>
+            <div style="clear: left;"></div>
+        </form>
+      </div>
+      <div class="mt-2 mb-5 shadow-sm">
+          <canvas id="CountBarChart"></canvas>
+      </div>
+      <div>
+        <div id="result-table" style="margin-bottom: 5%;" class="shadow">
+        </div>
+      </div>
+      <a id="download_link"></a>
+      <div>
+        <div id="page_top"><a href="#"></a></div>
+      </div>
+    </main>
+  </div>
+</div>
+{% endblock %}
+
+{% block script %}
+{% load static %}
+<script type="text/javascript" src="{% static 'js/moment-with-locales.min.js' %}"></script>
+<script type="text/javascript" src="{% static 'js/tempusdominus-bootstrap-4.js' %}"></script>
+<script type="text/javascript" src="{% static 'js/datetimepicker_original.js' %}"></script>
+<script type="text/javascript" src="{% static 'js/polyfill.min.js' %}"></script>
+<script type="text/javascript" src="{% static 'js/tabulator.js' %}"></script>
+<script type="text/javascript" src="{% static 'js/xlsx.full.min.js' %}"></script>
+<script type="text/javascript" src="{% static 'js/chart_original/Chart.min.js' %}"></script>
+<script type="text/javascript" src="{% static 'js/chart_original/chartjs-plugin-datalabels.min.js' %}"></script>
+<script type="text/javascript" src="{% static 'js/total_labels.js' %}"></script>
+<script type="text/javascript" src="{% static 'js/vue.min.js' %}"></script>
+<script type="text/javascript">
+let aiChartJson = {{ ai_chart_json|safe }};
+let aiTableJson = {{ ai_table_json|safe }};
+let realChartJson = {{ real_chart_json|safe }};
+let realTableJson = {{ real_table_json|safe }};
+let info_json = {{ info_json|safe }};
+let count_category = info_json.count_category;
+var first_value = aiChartJson.first_count_list;
+var second_value = aiChartJson.second_count_list;
+var third_value = aiChartJson.third_count_list;
+var others_value = aiChartJson.others_count_list;
+console.log(realChartJson);
+$(function(){
+   $( '#id_point_count_0' ).change( function() {
+      ex_chart.data.labels = aiChartJson.item_name_list;
+      ex_chart.data.datasets[0].data = aiChartJson.first_count_list;
+      ex_chart.data.datasets[0].category_labels = aiChartJson.first_key_list;
+      ex_chart.data.datasets[1].data = aiChartJson.second_count_list;
+      ex_chart.data.datasets[1].category_labels = aiChartJson.second_key_list;
+      ex_chart.data.datasets[2].data = aiChartJson.third_count_list;
+      ex_chart.data.datasets[2].category_labels = aiChartJson.third_key_list;
+      ex_chart.data.datasets[3].data = aiChartJson.others_count_list;
+      ex_chart.data.datasets[3].category_labels = aiChartJson.others_key_list;
+      ex_chart.update();
+      table.setData(aiTableJson);
+   });
+});
+$(function(){
+   $( '#id_point_count_1' ).change( function() {
+      ex_chart.data.labels = aiChartJson.item_name_list;
+      ex_chart.data.datasets[0].data = aiChartJson.first_amount_list;
+      ex_chart.data.datasets[0].category_labels = aiChartJson.first_key_list;
+      ex_chart.data.datasets[1].data = aiChartJson.second_amount_list;
+      ex_chart.data.datasets[1].category_labels = aiChartJson.second_key_list;
+      ex_chart.data.datasets[2].data = aiChartJson.third_amount_list;
+      ex_chart.data.datasets[2].category_labels = aiChartJson.third_key_list;
+      ex_chart.data.datasets[3].data = aiChartJson.others_amount_list;
+      ex_chart.data.datasets[3].category_labels = aiChartJson.others_key_list;
+      ex_chart.update();
+      table.setData(aiTableJson);
+   });
+});
+$(function(){
+   $( '#id_point_count_2' ).change( function() {
+      ex_chart.data.labels = realChartJson.item_name_list;
+      ex_chart.data.datasets[0].data = realChartJson.first_count_list;
+      ex_chart.data.datasets[0].category_labels = realChartJson.first_key_list;
+      ex_chart.data.datasets[1].data = realChartJson.second_count_list;
+      ex_chart.data.datasets[1].category_labels = realChartJson.second_key_list;
+      ex_chart.data.datasets[2].data = realChartJson.third_count_list;
+      ex_chart.data.datasets[2].category_labels = realChartJson.third_key_list;
+      ex_chart.data.datasets[3].data = realChartJson.others_count_list;
+      ex_chart.data.datasets[3].category_labels = realChartJson.others_key_list;
+      ex_chart.update();
+      table.setData(realTableJson);
+   });
+});
+$(function(){
+   $( '#id_point_count_3' ).change( function() {
+      ex_chart.data.labels = realChartJson.item_name_list;
+      ex_chart.data.datasets[0].data = realChartJson.first_amount_list;
+      ex_chart.data.datasets[0].category_labels = realChartJson.first_key_list;
+      ex_chart.data.datasets[1].data = realChartJson.second_amount_list;
+      ex_chart.data.datasets[1].category_labels = realChartJson.second_key_list;
+      ex_chart.data.datasets[2].data = realChartJson.third_amount_list;
+      ex_chart.data.datasets[2].category_labels = realChartJson.third_key_list;
+      ex_chart.data.datasets[3].data = realChartJson.others_amount_list;
+      ex_chart.data.datasets[3].category_labels = realChartJson.others_key_list;
+      ex_chart.update();
+      table.setData(realTableJson);
+   });
+});
+console.log(aiChartJson);
+console.log(realChartJson);
+var ctx = document.getElementById("CountBarChart");
+const labels = aiChartJson.item_name_list;
+let data = {
+  labels: labels,
+  datasets: [{
+    axis: 'y',
+    label: count_category + "1",
+    category_labels: aiChartJson.first_key_list,
+    data: first_value,
+    fill: false,
+    backgroundColor: 'rgba(255, 99, 132, 0.9)',
+    // borderColor: 'rgb(255, 99, 132)',
+    borderWidth: 1
+  },{
+    axis: 'y',
+    label: count_category + "2",
+    category_labels: aiChartJson.second_key_list,
+    data: second_value,
+    fill: false,
+    backgroundColor: 'rgba(255, 99, 132, 0.8)',
+    // borderColor: 'rgb(255, 99, 132)',
+    borderWidth: 1
+  },{
+    axis: 'y',
+    label: count_category + "3",
+    category_labels: aiChartJson.third_key_list,
+    data: third_value,
+    fill: false,
+    backgroundColor: 'rgba(255, 99, 132, 0.7)',
+    // borderColor: 'rgb(255, 99, 132)',
+    borderWidth: 1
+  },{
+    axis: 'y',
+    label: count_category + "4",
+    category_labels: aiChartJson.others_key_list,
+    data: others_value,
+    fill: false,
+    backgroundColor: 'rgba(255, 99, 132, 0.6)',
+    // borderColor: 'rgb(255, 99, 132)',
+    borderWidth: 1
+  },]
+};
+
+const options = {
+    indexAxis: 'y',
+    scales: {
+      xAxes: [{
+        stacked: true,
+      }],
+      yAxes: [{
+        stacked: true,
+      }]
+    },
+    legend: {
+            display: false
+        },
+    plugins: {
+        datalabels: {
+          formatter: function(value, context) {
+            let detail_name = context.dataset.category_labels[context.dataIndex];
+            let count = context.dataset.data[context.dataIndex];
+            result = ""
+            if (count > 0) {
+              result = detail_name + " " + count;
+            }
+            result = ""
+          return result;
+          },
+        }
+    },
+  }
+
+  // ▼ これを追加
+  options.tooltips = {
+    // 吹き出しの背景色
+    backgroundColor: "rgba(19, 56, 95, 0.9)",
+    // マーカーによって変更するもの
+    callbacks: {
+      // ツールチップの表示内容
+      label: function(tooltipItem, context) {
+        let detail_name = context.datasets[tooltipItem.datasetIndex].category_labels[tooltipItem.index];
+        let detail_count = tooltipItem.value;
+        result = "";
+        if(detail_count > 0) {
+          result = detail_name + " : " + detail_count;
+        };
+        return result;
+      }
+    }
+  };
+
+var ex_chart = new Chart(ctx, {
+  plugins: [ChartDataLabels],
+  type: 'horizontalBar',
+  data: data,
+  options:options,
+});
+
+
+$(function(){
+  $('#selectresultview').click(function(){
+    $('#loading_anime').css('visibility','visible');
+    $('#submit_search').trigger('click');
+  });
+});
+
+const column_list = info_json.column_list;
+var table = new Tabulator("#result-table", {
+    data: aiTableJson,
+    layout:"fitColumns",
+    tooltips:true,
+    columns:[
+    {title:column_list[0], field:"item_name"},
+    {title:column_list[1], field:"total_count", align:"right", width:70, bottomCalc:"sum"},
+    {title:column_list[2], field:"first_key"},
+    {title:column_list[3], align:"right", width:80, field:"first_count"},
+    {title:column_list[4], field:"second_key"},
+    {title:column_list[5], align:"right", width:80, field:"second_count"},
+    {title:column_list[6], field:"third_key"},
+    {title:column_list[7], align:"right", width:80, field:"third_count"},
+    {title:column_list[8], field:"others_key"},
+    {title:column_list[9], align:"right", width:80, field:"others_count"},
+    {title:column_list[10], field:"total_amount", align:"right", width:100, bottomCalc:"sum"},
+    ],
+});
+document.getElementById("download-xlsx").addEventListener("click", function(){
+    table.download("xlsx", "検知結果サマリー.xlsx", {sheetName:"table"});
+});
+
+
+
+var canvas = document.getElementById('CountBarChart');
+var downloadLink = document.getElementById('download_link');
+var filename = 'グラフ.png';
+
+/*  テストのために描画  */
+var ctx = canvas.getContext('2d');
+ctx.fillStyle = '#eee';
+ctx.fillRect(0, 0, 400, 200);
+ctx.font = '18px sans-serif';
+ctx.fillStyle = '#e00';
+ctx.fillText('このキャンバスを画像でダウンロードします', 25, 100);
+
+var button = document.getElementById('download-chart');
+button.addEventListener('click', function(){
+
+    if (canvas.msToBlob) {
+        var blob = canvas.msToBlob();
+        window.navigator.msSaveBlob(blob, filename);
+    } else {
+        downloadLink.href = canvas.toDataURL('image/png');
+        downloadLink.download = filename;
+        downloadLink.click();
+    }
+
+});
+
+
+</script>
+{% endblock script %}

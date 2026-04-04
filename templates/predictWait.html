@@ -1,0 +1,46 @@
+{% extends 'base.html' %}
+{% block header %}
+<title>{{ menu_info.1.menu_name }}</title>
+{% endblock %}
+
+{% block button_area %}
+<div class=" container-fluid">
+  <h4 style="text-align: center; margin-top: 1vh;">{{ menu_info.1.menu_name }}</h4><hr noshade style="margin: 0;">
+
+  <!-- ボタンエリア -->
+  <div class="container-fluid text-center button_area">
+    <a href="{% url 'indexview' %}" class="btn btn_close" style="margin: 0.1% 0.5% 0.2% 0.5%; padding:0.1% 1.5% 0.1% 1.5%;"><i class="fas fa-times"></i> 閉じる</a>
+  </div>
+</div>
+{% endblock button_area %}
+
+{% block content %}
+<div class="container-fluid">
+  <div class="row">
+    <div class="col"></div>
+    <div class="col mt-5">
+      {% if other_process_wait_messe %}
+      <h5 class="text-center">{{ other_process_wait_messe }}</h5>
+      {% else %}
+      <h5 class="text-center">以下の内容で実行されます。</h5>
+      <table class="table thead-light table-bordered mt-5">
+        <tbody>
+          <tr>
+            <td class="bg-light" scope="col">処理開始日時</td>
+            <td>{{ return_time }}</td>
+          </tr>
+          <tr>
+            <td class="bg-light" scope="col">検知期間</td>
+            <td>{{ period }}</td>
+          </tr>
+        </tbody>
+      </table>
+      <div class="text-center mt-5">
+        <a href="{% url 'delete_task' task_name%}" class="btn btn_display w-25">削除</a>
+      </div>
+      {% endif %}
+    </div>
+    <div class="col"></div>
+  </div>
+</div>
+{% endblock content %}

@@ -1,0 +1,25 @@
+{
+"1":{
+  "columns": [
+         ["カルテ番号等"]
+     ],
+  "files": ["model"],
+  "targets": ["140033770", "197000470"],
+  "max_depth": 5,
+  "n_estimators" : 250
+  },
+  "2":{
+     "columns": [
+         ["カルテ番号等"]
+     ],
+    "files": ["model"],
+    "option_list": [1],
+    "targets": [],
+    "max_depth": 5,
+    "n_estimators" : 250
+  },
+  "_comment": {
+      "1": "randomforest learning",
+      "2": "randomforest learning special case"
+  }
+}

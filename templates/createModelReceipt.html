@@ -1,0 +1,94 @@
+{% extends 'base.html' %}
+{% block header %}
+<title>{{ menu_info.0.menu_name }}</title>
+{% endblock %}
+
+{% block button_area %}
+<div class="container-fluid">
+  <h4 style="text-align: center; margin-top: 1vh;">{{ menu_info.0.menu_name }}</h4><hr noshade style="margin: 0;">
+
+  <!-- ボタンエリア -->
+  <div class="container-fluid text-center button_area">
+    <a href="{% url 'indexview' %}" class="btn btn_close" style="margin: 0.1% 0.5% 0.2% 0.5%; padding:0.1% 1.5% 0.1% 1.5%;">閉じる</a>
+  </div>
+</div>
+{% endblock button_area %}
+
+{% block content %}
+<div class="container">
+  <div class="mt-5">
+    <h5><b>提出済みレセプトデータ格納</b></h5>
+    <table class="table table-sm table-borderless mt-4">
+      <tr>
+        <th>格納フォルダ</th>
+        <td>
+          <p class="copy_text" id="copytext_receipt_pre_folder">{{ receipt_pre_folder }}</p>
+            <button class="copybtn" id="copybtn_receipt_pre_folder">コピー</button>
+        </td>
+      </tr>
+    </table>
+    <table class="table table-sm table-bordered">
+      <thead class="thead-light">
+        <tr>
+          <th class="w-50 text-center" scope="col">対象ファイル</th>
+          <th class="w-50 text-center" scope="col">状態</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for rece_pre_object in rece_pre_object_list %}
+          {% if rece_pre_object.flg == 0 %}
+          <tr>
+            <td class="w-50 text-center" >{{rece_pre_object.file}}</td>
+            <td class="text-center">{{rece_pre_object.status}}</td>
+          </tr>
+          {% else %}
+          <tr style="background-color: #FFEEFF;">
+            <td class="w-50 text-center" >{{rece_pre_object.file}}</td>
+            <td class="text-center">{{rece_pre_object.status}}</td>
+          </tr>
+          {% endif %}
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+
+      {% if ng_flag == 1 %}
+        <form action="{% url 'createmodel' %}" method="post">
+      {% else %}
+        <form action="{% url 'run_create_model' %}" method="post">
+      {% endif %}
+          {% csrf_token %}
+          <div class="proc-dummy" style="visibility: hidden;">
+                <input type="text" id="karte_period" name="karte_period" value="{{ karte_period }}">
+          </div>
+
+          <!-- 実行前の確認メッセージ -->
+          {% if ng_flag == 1 %}
+          <div class="container" style="background-color: #FFEEFF; padding: 20px; margin-bottom: 20px; border-radius: 10px; border: solid; border-color: #AAAAAA; border-width: 1px;">
+            <h5>{{ rece_file_none_messe }}</h5>
+            <h5>{{ file_chk_messe }}</h5>
+            <h5>{{ period_messe }}</h5>
+            <h5>{{ karte_period_messe }}</h5>
+            <h5>データを入れなおした後、「再表示」ボタンをクリックしてください。</h5>
+          </div>
+          {% else %}
+          <div class="container" style="background-color: #EEFFFF; padding: 20px; margin-bottom: 20px; border-radius: 10px; border: solid; border-color: #AAAAAA; border-width: 1px;">
+            <h5>この内容で「モデル作成」を実施します。</h5>
+            <h5>よろしければ、「実行」ボタンをクリックしてください。</h5>
+          </div>
+          {% endif %}
+
+          <!-- データが揃っていたら「実行」ボタンを、揃っていなかったら「再表示」ボタンを表示 -->
+            <div class="container text-center">
+              {% if ng_flag == 1 %}
+                <input type="submit" value="再表示" class="btn btn_submit w-25" id="data_chk">
+              {% else %}
+                <input type="submit" value="実行" class="btn btn_submit w-25" id="data_chk">
+              {% endif %}
+            </div>
+        </div>
+        </form>
+      </div>
+  </div>
+</div>
+{% endblock content %}

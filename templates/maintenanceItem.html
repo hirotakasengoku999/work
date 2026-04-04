@@ -1,0 +1,135 @@
+{% extends 'base.html' %}
+
+{% block customcss %}
+{% load static %}
+<link rel="stylesheet" type="text/css" href="{% static 'css/tabulator.css' %}">
+<link rel="stylesheet" type="text/css" href="{% static 'css/tempusdominus-bootstrap-4.css' %}">
+{% endblock customcss %}
+
+{% block header %}
+<title>算定項目マスタメンテナンス</title>
+{% endblock header %}
+
+{% block button_area %}
+<div class="container-fluid text-center">
+<h4 style="text-align: center; margin-top: 1vh;">算定項目</h4><hr noshade style="margin: 0;">
+<!-- ボタンエリア -->
+  <div class="container-fluid text-center button_area">
+    {% if user_authority == "9" %}
+    <a href="{% url 'create_item' %}" class="btn btn_display" style="margin: 0.1% 0.5% 0.2% 0.5%; padding:0.1% 1.5% 0.1% 1.5%; width:9%;"><i class="fas fa-plus"></i> 項目追加</a>
+    <!-- <a href="#" class="btn btn_submit"  data-toggle="modal" data-target="#updateChk" style="margin: 0.1% 0.5% 0.2% 0.5%; padding:0.1% 1.5% 0.1% 1.5%; width:9%;"><i class="fas fa-plus"></i> 全項目</a> -->
+    {% endif %}
+    <a href="{% url 'maintenanceIndex' %}" class="btn btn_close" style="margin: 0.1% 0.5% 0.2% 0.5%; padding:0.1% 1.5% 0.1% 1.5%; width:9%;"><i class="fas fa-times"></i> 閉じる</a>
+  </div>
+</div>
+{% endblock button_area %}
+
+{% block content %}
+<div id="updateChk" class="modal">
+  <form action="{% url 'add_allitem' %}" method="post">{% csrf_token %}
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-content">
+          <div class="container mt-3">
+            <h5>全項目を以下の期間で追加しますか？</h5>              
+            <span style="float: left;" class="mt-3 mb-3">
+                <div class="input-group date" id="datetimepicker-startdate"  data-target-input="nearest">
+                  <div class="input-group-prepend">
+                    <div class="input-group-text">{{ add_item_all_form.startdate.label }}</div>
+                  </div>
+                  {{add_item_all_form.startdate}}
+                  <div class="input-group-append" data-target="#datetimepicker-startdate" data-toggle="datetimepicker">
+                    <div class="input-group-text"><i class="fas fa-calendar-alt"></i></div>
+                  </div>
+                </div>
+            </span>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <input id="allupdate" type="submit" class="btn btn_submit" value="はい"><button class="btn btn_close" data-dismiss="modal">いいえ</button>
+        </div>
+      </div>
+    </div>
+  </form>
+</div>
+</div>
+  <div class="container-fluid mt-3">
+      <table class="shadow" id="medical-item-table">
+        <thead>
+          <tr>
+            <th></th>
+            <th>コード</th>
+            <th>コード２</th>
+            <th>名称</th>
+            <th>点数</th>
+            <th>確率</th>
+            <th>使用フラグ</th>
+            <th>検知の方法</th>
+            <th>開始日時</th>
+            <th>終了日時</th>
+            <th>備考</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for item in items %}
+            <tr>
+              <td>{% url 'detail_item' item.id %}</a></td>
+              <td>{{ item.CODE }}</td>
+              <td>{{ item.CODE2 }}</td>
+              <td>{{ item.NAME }}</td>
+              <td>{{ item.POINTS }}</td>
+              <td>{{ item.PREDICT_PROBA }}</td>
+              <td>{{ item.USE_FLAG }}</td>
+              {% if item.RULE_FLAG %}
+              <td>ルール</td>
+              {% else %}
+              <td>機械学習</td>
+              {% endif %}
+              <td>{{ item.STARTDATE }}</td>
+              <td>{{ item.ENDDATE }}</td>
+              <td>{{ item.NOTE }}</td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+  </div>
+</form>
+{% endblock content %}
+
+{% block script %}
+{% load static %}
+<script type="text/javascript" src="{% static 'js/polyfill.min.js' %}"></script>
+<script type="text/javascript" src="{% static 'js/tabulator.js' %}"></script>
+<script type="text/javascript">
+var medical_item_table = new Tabulator ("#medical-item-table", {
+    height:"800px",
+    layout:"fitColumns",
+    columns:[
+    // {title:"", field:"detail", width:55, formatter: "link", formatterParams: {
+    //     label: "詳細",
+    //     url: cell => cell.getValue()}
+    // },
+    {title:"", field:"detail", width:55, formatter: "link", formatterParams: {
+        label: "詳細"}
+    },
+    {title:"コード", field:"CODE", width:100, headerFilter:"input"},
+    {title:"コード２", field:"CODE2", width:100, headerFilter:"input"},
+    {title:"名称", field:"CODENAME", width:400, headerFilter:"input"},
+    {title:"点数", field:"POINTS", width:80, headerFilter:"input"},
+    {title:"確率", field:"PREDICT_PROBA", width:70, headerFilter:"input"},
+    {title:"使用フラグ", field:"FLAG", width:130, headerFilter:"select", headerFilterParams:{values:{"1":"1", "0":"0", "":"全て"}}},
+    {title:"検知の方法", field:"RULE_FLAG", width:130, headerFilter:"input"},
+    {title:"開始日時", field:"STARTDATE", width:120, headerFilter:"input"},
+    {title:"終了日時", field:"ENDDATE", width:120, headerFilter:"input"},
+    {title:"備考", field:"備考", headerFilter:"input"},
+    ],
+    initialHeaderFilter:[
+        {field:"FLAG", type:"=", value:"1"}
+    ],
+});
+
+</script>
+<script type="text/javascript" src="{% static 'js/moment-with-locales.min.js' %}"></script>
+<script type="text/javascript" src="{% static 'js/tempusdominus-bootstrap-4.js' %}"></script>
+<script type="text/javascript" src="{% static 'js/datetimepicker_original.js' %}"></script>
+{% endblock script %}

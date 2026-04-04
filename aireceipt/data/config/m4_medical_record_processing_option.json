@@ -1,0 +1,68 @@
+{
+  "1":{
+     "files": ["../work/model/1_4/カルテ_全結合_前処理.csv", "../work/model/1_11/", "../work/model/1_12/"],
+     "columns": [
+         ["カルテ番号等", "_date"],
+         ["文書種別", "morphological_analysis", "target_colums"],
+         ["カルテ内容"]
+     ]
+  },
+  "2":{
+     "files": ["../work/model/1_4/カルテ_全結合_前処理.csv", "../work/model/3_2/文書有無.pickle"],
+     "columns": [
+         ["カルテ番号等", "_date"],
+         ["文書種別"]
+     ]
+  },
+  "4":{
+     "files": ["../work/model/1_4/カルテ_全結合_前処理.csv", "../work/model/1_21/", "../data/surgical_anesthesia/surgical_equipment/", "../data/surgical_anesthesia/anesthesia_name/"],
+     "columns": [
+         ["カルテ番号等", "_date"],
+         ["文書種別", "統合キーワード", "登録キーワード"],
+         ["カルテ内容", "体位"]
+     ],
+    "bunsyo_syubetu": ["手術歴", "手術記録", "ORSYS"],
+    "targets": ["150339310", "150339210", "150286990", "150333210", "150233410", "150333010"]
+  },
+  "5":{
+     "files": ["../work/model/1_4/カルテ_全結合_前処理.csv", "../work/model/5_3/院内トリアージ_カルテ.csv"],
+     "columns": [
+         ["カルテ番号等", "_date"],
+         ["カルテ内容"]
+     ],
+    "items": "【トリアージレベル】"
+  },
+  "6":{
+     "files": ["../work/model/1_4/カルテ_全結合_前処理.csv", "../work/model/5_3/院内感染_検査記録.csv"],
+     "columns": [
+         ["カルテ番号等", "_date"],
+         ["検査項目"]
+    ]
+  },
+  "7":{
+     "files": ["../work/model/1_4/カルテ_全結合_前処理.csv", "../work/model/5_3/介護支援_連携指導料.csv"],
+     "columns": [
+         ["カルテ番号等", "_date"],
+         ["介護支援連携指導_文書"]
+    ]
+  },
+  "8":{
+     "files": ["../work/model/1_4/カルテ_全結合_前処理.csv", "../work/model/0_2/1_予定・緊急入院区分.csv", "../data/master/JCS_level.csv", "../work/model/5_3/JCSレベル.csv"],
+     "columns": [
+         ["カルテ番号等", "_date"],
+         ["検索対象の列"],
+         ["カルテ内容"],
+         ["カルテ番号等", "ＪＣＳ", "入院年月日", "退院年月日"]
+     ],
+    "jcs_list": ["1", "2", "3", "10", "20", "30", "100", "200", "300"]
+  },
+  "_comment": {
+      "1": "morphologic",
+      "2": "medical record processing",
+      "4": "surgical anesthesia processing",
+      "5": "triage",
+      "6": "inspection item",
+      "7": "care support doc",
+      "8": "jcs"
+  }
+}

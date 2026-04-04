@@ -1,0 +1,117 @@
+{% extends 'base.html' %}
+
+{% block customcss %}
+{% load static %}
+<link rel="stylesheet" type="text/css" href="{% static 'css/tempusdominus-bootstrap-4.css' %}">
+{% endblock customcss %}
+
+{% block header %}
+<title>{{title}}</title>
+
+<style type="text/css">
+.tooltip .tooltip-inner { 
+    background-color: #ffffcc;
+    color: #000;
+    border: solid 1px;
+} 
+
+.tooltip .arrow::before { 
+    border-left-color: #ffffcc;
+    color: #000;
+    border: solid 1px;
+} 
+</style>
+{% endblock %}
+
+{% block button_area %}
+<form action="{% url 'user_edit' id %}" method="post">{% csrf_token %}
+<div class="container-fluid text-center">
+<h4 style="text-align: center; margin-top: 1vh;">{{title}}</h4><hr noshade style="margin: 0;">
+<!-- ボタンエリア -->
+  <div class="container-fluid text-center button_area">
+    <button type="submit" class="btn btn_submit" style="margin: 0.1% 0.5% 0.2% 0.5%; padding:0.1% 1.5% 0.1% 1.5%;"><i class="fas fa-save"></i> 保存</button>
+    <a href="{% url 'delete_hanyo' id %}" class="btn btn_display" style="margin: 0.1% 0.5% 0.2% 0.5%; padding:0.1% 1.5% 0.1% 1.5%;"><i class="fas fa-trash-alt"></i> 削除</a>
+    <a href="{% url 'user_list' %}" class="btn btn_close" style="margin: 0.1% 0.5% 0.2% 0.5%; padding:0.1% 1.5% 0.1% 1.5%;"><i class="fas fa-undo-alt"></i> 戻る</a>
+  </div>
+</div>
+{% endblock button_area %}
+
+{% block content %}
+  <div class="container mt-5">
+    <table class="table table-bordered">
+      <tr>
+        <th class="bg-light">利用者ID</th><td>{{ form.code2 }}</td>
+      </tr>
+      <tr>
+        <th class="bg-light">利用者氏名</th><td>{{ form.name }}</td>
+      </tr>
+      <tr>
+        <th class="bg-light">パスワード</th>
+        <td>
+        <div class="input-group">
+          {{form.controltext1}}
+          <div class="input-group-append" id="btn_eye">
+            <div class="input-group-text"><i class="fas fa-eye" id="eye_icon"></i></div>
+          </div>
+        </div>
+      </td>
+      </tr>
+      <tr>
+        <th class="bg-light">使用権限</th><td>{{form.authority}}</td>
+      </tr>
+      <tr>
+        <th class="bg-light">開始日　-　終了日</th>
+        <td>
+          <span style="float: left; width: 40%;">
+            <div class="input-group date" id="datetimepicker-startdate"  data-target-input="nearest">
+              {{ form.startdate }}
+              <div class="input-group-append" data-target="#datetimepicker-startdate" data-toggle="datetimepicker">
+                <div class="input-group-text"><i class="fas fa-calendar-alt"></i></div>
+              </div>
+            </div>
+          </span>
+          <span style="float: left; margin: 1% 3% 1% 3%;">-</span>
+          <span style="float: left; width: 40%;">
+            <div class="input-group date" id="datetimepicker-enddate"  data-target-input="nearest">
+              {{ form.enddate }}
+              <div class="input-group-append" data-target="#datetimepicker-enddate" data-toggle="datetimepicker">
+                <div class="input-group-text"><i class="fas fa-calendar-alt"></i></div>
+              </div>
+            </div>
+          </span>
+          <div style="clear: left;"></div>
+        </td>
+      </tr>
+      <tr>
+        <th class="bg-light">作成者</th><td>{{ form.createuser }}</td>
+      </tr>
+      <tr>
+        <th class="bg-light">更新者</th><td>{{ form.updateuser }}</td>
+      </tr>
+    </table>
+  </div>
+</form>
+
+<div class="container text-center text-danger">
+  {% if start_end %}
+  <p>{{ start_end }}</p>
+  {% endif %}
+</div>
+
+{% endblock content %}
+
+{% block script %}
+<script type="text/javascript" src="{% static 'js/moment-with-locales.min.js' %}"></script>
+<script type="text/javascript" src="{% static 'js/tempusdominus-bootstrap-4.js' %}"></script>
+<script type="text/javascript" src="{% static 'js/datetimepicker_original.js' %}"></script>
+<script type="text/javascript">
+  $('#btn_eye').mousedown(function() {
+    $('#id_controltext1').attr('type','text');
+    $('#eye_icon').attr('class','fas fa-eye-slash');
+  })
+  $('#btn_eye').mouseup(function() {
+    $('#id_controltext1').attr('type','password');
+    $('#eye_icon').attr('class','fas fa-eye');
+  })
+</script>
+{% endblock script %}

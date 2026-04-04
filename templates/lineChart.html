@@ -1,0 +1,203 @@
+{% extends 'base.html' %}
+
+{% block customcss %}
+
+{% load static %}
+<link rel="stylesheet" type="text/css" href="{% static 'css/tempusdominus-bootstrap-4.css' %}">
+<link rel="stylesheet" type="text/css" href="{% static 'css/tabulator.css' %}">
+<style type="text/css">
+#page_top{
+  width: 50px;
+  height: 50px;
+  position: fixed;
+  right: 0;
+  bottom: 0;
+  background: #3f98ef;
+  opacity: 0.6;
+  border-radius: 50%;
+}
+#page_top a{
+  position: relative;
+  display: block;
+  width: 50px;
+  height: 50px;
+  text-decoration: none;
+}
+#page_top a::before{
+  font-family: 'Font Awesome 5 Free';
+  font-weight: 900;
+  content: '\f102';
+  font-size: 25px;
+  color: #fff;
+  position: absolute;
+  width: 25px;
+  height: 25px;
+  top: -5px;
+  bottom: 0;
+  right: 0;
+  left: 0;
+  margin: auto;
+  text-align: center;
+}
+</style>
+{% endblock customcss %}
+
+{% block header %}
+<title>サマリー</title>
+{% load aireceiptapp_extras %}
+{% endblock header %}
+
+{% block button_area %}
+<h4 style="text-align: center; margin-top: 1vh;">サマリー</h4><hr noshade style="margin: 0;">
+
+<!-- ボタンエリア -->
+<div class="container-fluid text-center button_area">
+  <button class="btn btn_submit" id="download-chart" type="button" style="margin: 0.1% 0.5% 0.2% 0.5%; padding:0.1% 1.5% 0.1% 1.5%; width:9vw;"><i class="fas fa-chart-bar"></i>  グラフ出力</button>
+  <a href="{% url 'indexview' %}" class="btn btn_close" style="margin: 0.1% 0.5% 0.2% 0.5%; padding:0.1% 1.5% 0 1.5%; width: 9vw;"><i class="fas fa-times"></i> 閉じる</a>
+</div>
+{% endblock button_area %}
+
+{% block content %}
+<div class="container-fluid">
+  <div class="row">
+    <nav class="col-md-2 d-none d-md-block bg-light sidebar" style="background: linear-gradient(#EEEEEE, 40%, #EEEEEE); background: -ms-linear-gradient(top, #EEEEEE, #EEEEEE); border-bottom: 0px none; margin: 0; padding: 0;">
+          <div class="position-sticky pt-3">
+            <h5 class="sidebar-heading d-flex justify-content-between align-items-center px-3 mt-4 mb-1 text-muted">
+              <span><i class="far fa-calendar-alt mr-2"></i>月別</span>
+            </h5>
+            <ul class="nav flex-column">
+              <li class="nav-item" style="border: none; text-align: left;">
+                <a class="nav-link active" aria-current="page" href="{% url 'chart' 'CODENAME' %}">
+                  算定項目別
+                </a>
+              </li>
+              <li class="nav-item" style="border: none; text-align: left;">
+                <a class="nav-link" href="{% url 'chart' 'DEPT' %}">
+                  <span data-feather="file"></span>
+                  診療科別
+                </a>
+              </li>
+              <li class="nav-item" style="border: none; text-align: left;">
+                <a class="nav-link" href="{% url 'chart' 'WARD' %}">
+                  <span data-feather="shopping-cart"></span>
+                  病棟別
+                </a>
+              </li>
+            </ul>
+
+            <h5 class="sidebar-heading d-flex justify-content-between align-items-center px-3 mt-4 mb-1 text-muted">
+              <span><i class="fas fa-chart-line mr-2"></i>時系列</span>
+            </h5>
+            <ul class="nav flex-column">
+              <li class="nav-item" style="border: none; text-align: left;">
+                <a class="nav-link active" aria-current="page" href="{% url 'request_amount' %}">
+                  総請求額
+                </a>
+              </li>
+              <li class="nav-item" style="border: none; text-align: left;">
+                <a class="nav-link active" aria-current="page" href="{% url 'line_chart' 'total_chart' %}">
+                  追加算定件数
+                </a>
+              </li>
+            </ul>
+          </div>
+    </nav>
+    <main class="col-md-9 ml-sm-auto col-lg-10 pt-3 px-4">
+      <div class="ml-4">
+        <span>{{form.point_count.0}}</span>
+        <span class="ml-5">{{form.point_count.2}}</span>
+      </div>
+      <div class="mt-2 mb-5">
+          <canvas id="CountLineChart"></canvas>
+      </div>
+      <a id="download_link"></a>
+      <div>
+        <div id="page_top"><a href="#"></a></div>
+      </div>
+    </main>
+  </div>
+</div>
+{% endblock %}
+
+{% block script %}
+{% load static %}
+<script type="text/javascript" src="{% static 'js/moment-with-locales.min.js' %}"></script>
+<script type="text/javascript" src="{% static 'js/tempusdominus-bootstrap-4.js' %}"></script>
+<script type="text/javascript" src="{% static 'js/datetimepicker_original.js' %}"></script>
+<script type="text/javascript" src="{% static 'js/polyfill.min.js' %}"></script>
+<script type="text/javascript" src="{% static 'js/tabulator.js' %}"></script>
+<script type="text/javascript" src="{% static 'js/xlsx.full.min.js' %}"></script>
+<script type="text/javascript" src="{% static 'js/chart_original/Chart.min.js' %}"></script>
+<script type="text/javascript" src="{% static 'js/chart_original/chartjs-plugin-datalabels.min.js' %}"></script>
+<script type="text/javascript">
+let ai_json = {{ ai_json|safe }};
+let real_json = {{ real_json|safe }};
+console.log(real_json);
+var ctx = document.getElementById("CountLineChart");
+$(function(){
+   $( '#id_point_count_0' ).change( function() {
+      ex_chart.data.labels = ai_json.seikyunengetsu;
+      ex_chart.data.datasets[0].data = ai_json.SUMCOUNT;
+      ex_chart.update();
+      console.log(ex_chart.data);
+   });
+});
+$(function(){
+   $( '#id_point_count_2' ).change( function() {
+      ex_chart.data.labels = real_json.seikyunengetsu;
+      ex_chart.data.datasets[0].data = real_json.SUMCOUNT;
+      ex_chart.update();
+      console.log(ex_chart.data);
+   });
+});
+var data = {
+    labels: ai_json.seikyunengetsu,
+    datasets: [{
+        label: '算定漏れ件数',
+        data: ai_json.SUMCOUNT,
+        datalabels: {
+            align: 'end',
+        },
+        borderColor: 'rgba(255, 100, 100, 1)',
+        lineTension: 0,
+        fill: false,
+    }]
+};
+
+var ex_chart = new Chart(ctx, {
+  type: 'line',
+  data: data,
+  options: {
+    legend: {
+      display: false
+    },
+  },
+});
+
+var canvas = document.getElementById('CountLineChart');
+var downloadLink = document.getElementById('download_link');
+var filename = 'グラフ.png';
+
+/*  テストのために描画  */
+var ctx = canvas.getContext('2d');
+ctx.fillStyle = '#eee';
+ctx.fillRect(0, 0, 400, 200);
+ctx.font = '18px sans-serif';
+ctx.fillStyle = '#e00';
+ctx.fillText('このキャンバスを画像でダウンロードします', 25, 100);
+
+var button = document.getElementById('download-chart');
+button.addEventListener('click', function(){
+
+    if (canvas.msToBlob) {
+        var blob = canvas.msToBlob();
+        window.navigator.msSaveBlob(blob, filename);
+    } else {
+        downloadLink.href = canvas.toDataURL('image/png');
+        downloadLink.download = filename;
+        downloadLink.click();
+    }
+
+});
+</script>
+{% endblock script %}

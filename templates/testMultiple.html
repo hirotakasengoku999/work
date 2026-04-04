@@ -1,0 +1,150 @@
+{% extends 'base.html' %}
+
+{% block customcss %}
+
+{% load static %}
+<link rel="stylesheet" type="text/css" href="{% static 'css/tempusdominus-bootstrap-4.css' %}">
+<link rel="stylesheet" type="text/css" href="{% static 'css/tabulator.css' %}">
+<link rel="stylesheet" type="text/css" href="{% static 'css/bootstrap-multiselect.min.css' %}">
+
+{% endblock customcss %}
+
+{% block header %}
+<title>{{menu_info.2.menu_name}}</title>
+{% load aireceiptapp_extras %}
+{% endblock header %}
+
+{% block button_area %}
+<h4 style="text-align: center; margin-top: 1vh;">{{menu_info.2.menu_name}}</h4><hr noshade style="margin: 0;">
+
+<!-- ボタンエリア -->
+<div class="container-fluid text-center button_area">
+  <input class="btn btn_display" type="button" value="表示" id="selectresultview" style="margin: 0.1% 0.5% 0.2% 0.5%; padding:0.1% 1.5% 0.1% 1.5%;">
+  <input class="btn btn_submit" id="download-xlsx" type="button" value="出力" style="margin: 0.1% 0.5% 0.2% 0.5%; padding:0.1% 1.5% 0.1% 1.5%;">
+  <a href="{% url 'indexview' %}" class="btn btn_close" style="margin: 0.1% 0.5% 0.2% 0.5%; padding:0.1% 1.5% 0 1.5%;"><i class="fas fa-times"></i> 閉じる</a>
+</div>
+{% endblock button_area %}
+
+{% block content %}
+<form method="post" action="{% url 'test_multiple' %}">
+  {% csrf_token %}
+<div class="container-fluid">
+  <div class="row mb-1">
+    <div class="col">
+      <div class="row mt-1">
+        <div class="col">
+          <div class="input-group date" id="datetimepicker-seikyugetsu"  data-target-input="nearest">
+            <div class="input-group-prepend"><div class="input-group-text">{{ form.seikyunengetsu.label }}</div></div>
+            {{ form.seikyunengetsu }}
+            <div class="input-group-append" data-target="#datetimepicker-seikyugetsu" data-toggle="datetimepicker">
+              <div class="input-group-text"><i class="fas fa-calendar-alt"></i></div>
+            </div>
+          </div>
+        </div>
+        <div class="col">
+          <div class="input-group">
+            <div class="input-group-prepend">
+              <div class="input-group-text">{{ form.check.label }}</div>              
+            </div>
+            {{ form.check }}
+          </div>
+        </div>
+        <div class="col">
+          <div class="input-group">
+            <div class="input-group-prepend">
+              <div class="input-group-text">{{ form.dept.label }}</div>              
+            </div>
+            {{ form.dept }}
+          </div>
+        </div>
+        <div class="col">
+          <div class="input-group">
+            <div class="input-group-prepend">
+              <div class="input-group-text">{{ form.ward.label }}</div>
+            </div>
+            {{ form.ward }}
+          </div>
+        </div>
+        <div class="col">
+          <div class="input-group">
+            <div class="input-group-prepend">
+              <div class="input-group-text">{{ form.in_out.label }}</div>
+            </div>
+            {{ form.in_out }}
+          </div>
+        </div>
+        <div class="col">
+          <div class="input-group">
+            <div class="input-group-prepend">
+              <div class="input-group-text">{{ form.codename.label }}</div>
+            </div>
+            {{ form.codename }}
+          </div>
+        </div>
+        <div class="col">
+          <div class="input-group">
+            <div class="input-group-prepend">
+              <div class="input-group-text">{{ form.zisseki.label }}</div>
+            </div>
+            {{ form.zisseki }}
+          </div>
+        </div>
+      </div>
+      <div hidden>
+          <!-- <input class="mt-1 btn btn_display" type="submit" name="" value="表示" style="padding:3% 30% 3% 30%;"> -->
+          <input class="mt-1 btn btn_display" type="submit" name="" value="表示" id="submit_search">
+      </div>
+    </div>
+  </div>
+</div>
+</form>
+<div class="container">
+  {{selectitems}}
+</div>
+
+<div class="mt-5">
+  <form method="POST" action="{% url 'test_multiple' %}">{% csrf_token %}
+  {{testform}}
+  <input type="submit" name="">
+  </form>
+</div>
+<div class="mt-5">
+  {{test_selectitems}}
+</div>
+{% endblock %}
+
+{% block script %}
+{% load static %}
+<script type="text/javascript" src="{% static 'js/moment-with-locales.min.js' %}"></script>
+<script type="text/javascript" src="{% static 'js/tempusdominus-bootstrap-4.js' %}"></script>
+<script type="text/javascript" src="{% static 'js/datetimepicker_original.js' %}"></script>
+<script type="text/javascript" src="{% static 'js/polyfill.min.js' %}"></script>
+<script type="text/javascript" src="{% static 'js/tabulator.js' %}"></script>
+<script type="text/javascript" src="{% static 'js/xlsx.full.min.js' %}"></script>
+<script type="text/javascript">
+$(function(){
+  $('#id_codename').multiselect({
+    buttonTextAlignment: 'left',
+    includeSelectAllOption: true,
+    maxHeight: 500,
+    numberDisplayed:1,
+  });
+})
+
+$(function(){
+  $('#id_testcodename').multiselect({
+    buttonTextAlignment: 'left',
+    includeSelectAllOption: true,
+    maxHeight: 500,
+    numberDisplayed:1,
+  });
+})
+
+$(function(){
+  $('#selectresultview').click(function(){
+    console.log('開始')
+    $('#submit_search').trigger('click');
+  });
+});
+</script>
+{% endblock script %}

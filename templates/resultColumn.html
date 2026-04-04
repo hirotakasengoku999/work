@@ -1,0 +1,66 @@
+{% extends 'base.html' %}
+{% block customcss %}
+{% load static %}
+<link rel="stylesheet" type="text/css" href="{% static 'css/tabulator.css' %}">
+{% endblock customcss %}
+{% block header %}
+    <title>{{title}}</title>
+{% endblock %}
+
+{% block button_area %}
+<form method="POST" action="{% url 'user_list' %}">{% csrf_token %}
+<div>
+  <h4 style="text-align: center; margin-top: 1vh;">{{title}}</h4><hr noshade style="margin: 0;">
+  <!-- ボタンエリア -->
+  <div class="text-center button_area">
+    <a href="{% url 'maintenanceIndex' %}" class="btn btn_close" style="margin: 0.1% 0.5% 0.2% 0.5%; padding:0.1% 1.5% 0 1.5%;"><i class="fas fa-times"></i> 閉じる</a>
+  </div>
+</div>
+{% endblock button_area %}
+
+{% block content %}
+<div class="container mt-5">
+  <table id="result-colmun-table">
+    <thead>
+      <tr>
+        <th></th>
+        <th>列名称</th>
+        <th>オリジナル列名称</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for i in obj %}
+      <tr>
+        <td>{% url 'edit_result_column' i.id %}</td>
+        <td>{{ i.COLUMN_NAME }}</td>
+        <td>{{ i.ORIGINAL_NAME }}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+</form>
+{% endblock content %}
+
+{% block script %}
+{% load static %}
+<script type="text/javascript" src="{% static 'js/polyfill.min.js' %}"></script>
+<script type="text/javascript" src="{% static 'js/tabulator.js' %}"></script>
+<script type="text/javascript">
+var medical_item_table = new Tabulator ("#result-colmun-table", {
+    height:"800px",
+    layout:"fitColumns",
+    columns:[
+    {title:"", field:"detail", width:55, formatter: "link", formatterParams: {
+        label: "編集"}
+    },
+    {title:"列名称", field:"CODE", headerFilter:"input"},
+    {title:"オリジナル列名称", field:"CODE2", headerFilter:"input"},
+    ],
+});
+
+</script>
+{% endblock script %}
+
+
+

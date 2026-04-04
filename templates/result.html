@@ -1,0 +1,139 @@
+{% extends 'base.html' %}
+
+{% block header %}
+    <title>結果</title>
+{% endblock %}
+
+{% block button_area %}
+<h4 style="text-align: center; margin-top: 1vh;">{{proc_name}}</h4><hr noshade style="margin: 0;">
+
+<!-- ボタンエリア -->
+<div class="container-fluid text-center button_area">
+  <a href="{% url 'indexview' %}" class="btn btn_close" style="margin: 0.1% 0.5% 0.2% 0.5%; padding:0.1% 1.5% 0 1.5%;"><i class="fas fa-times"></i> 閉じる</a>
+</div>
+{% endblock button_area %}
+
+{% block content %}
+    <div class="container">   
+            {% if rese_pp_messe %}
+              <div class="proc-flame">
+              <h5>{{ rese_pp_messe }}</h5>
+                <table class="table table-sm table-bordered">
+                  <thead class="thead-light">
+                    <tr>
+                      <th scope="col">フォルダ</th>
+                      <th scope="col">状態</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {% for item in rece_object_list %}
+                        {% if item.NGFLAG == 0 %}
+                          <tr>
+                              <td>{{ item.FOLDER }}</td>
+                              <td style="white-space:pre-wrap; word-wrap:break-word;">{{ item.STATUS }}</td>
+                          </tr>
+                        {% else %}
+                          <tr style="background-color: #FFEEFF;">
+                              <td>{{ item.FOLDER }}</td>
+                              <td style="white-space:pre-wrap; word-wrap:break-word;">{{ item.STATUS }}</td>
+                          </tr>
+                        {% endif %}
+                    {% endfor %}
+                  </tbody>
+                </table>
+              </div>
+            {% endif %}
+
+            {% if karte_pp_messe %}
+              <div class="proc-flame">
+                <h5>{{ karte_pp_messe }}</h5>
+                <table class="table table-sm table-bordered">
+                  <thead class="thead-light">
+                    <tr>
+                      <th scope="col">状態</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {% for item in karte_object_list %}
+                        {% if item.NGFLAG == 0 %}
+                          <tr>
+                              <td style="white-space:pre-wrap; word-wrap:break-word;">{{ item.STATUS }}</td>
+                          </tr>
+                        {% else %}
+                          <tr style="background-color: #FFEEFF;">
+                              <td style="white-space:pre-wrap; word-wrap:break-word;">{{ item.STATUS }}</td>
+                          </tr>
+                        {% endif %}
+                    {% endfor %}
+                  </tbody>
+                </table>
+              </div>
+            {% endif %}
+
+            {% if create_model_messe %}
+              <div class="proc-flame">
+                <h5>{{ create_model_messe }}</h5>
+                <table class="table table-sm table-bordered">
+                  <thead class="thead-light">
+                    <tr>
+                      <th scope="col">算定項目</th>
+                      <th scope="col">状態</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {% for item in model_object_list %}
+                        {% if item.NGFLAG == 0 %}
+                          <tr>
+                              <td>{{ item.FOLDER }}</td>
+                              <td style="white-space:pre-wrap; word-wrap:break-word;">{{ item.STATUS }}</td>
+                          </tr>
+                        {% else %}
+                          <tr style="background-color: #FFEEFF;">
+                              <td>{{ item.FOLDER }}</td>
+                              <td style="white-space:pre-wrap; word-wrap:break-word;">{{ item.STATUS }}</td>
+                          </tr>
+                        {% endif %}
+                    {% endfor %}
+                  </tbody>
+                </table>
+              </div>
+            {% endif %}
+          {% if predict_messe %}
+              <div class="proc-flame">
+                <h5>{{ predict_messe }}</h5>
+                <table class="table table-sm table-bordered">
+                  <thead class="thead-light">
+                    <tr>
+                      <th scope="col">算定項目</th>
+                      <th scope="col">状態</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {% for item in pre_object_list %}
+                        {% if item.NGFLAG == 0 %}
+                          <tr>
+                              <td>{{ item.ITEM }}</td>
+                              <td style="white-space:pre-wrap; word-wrap:break-word;">{{ item.STATUS }}</td>
+                          </tr>
+                        {% else %}
+                          <tr style="background-color: #FFEEFF;">
+                              <td>{{ item.STATUS }}</td>
+                              <td style="white-space:pre-wrap; word-wrap:break-word;">{{ item.STATUS }}</td>
+                          </tr>
+                        {% endif %}
+                    {% endfor %}
+                  </tbody>
+                </table>
+              </div>
+          {% endif %}
+          {% if stopmesse %}
+            <div class="container text-center" style="margin-top: 10%;">
+              <h5>{{ stopmesse }}</h5>
+            </div>
+          {% endif %}
+
+            </div>
+    </div>
+
+
+{% endblock content %}

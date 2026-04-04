@@ -1,0 +1,80 @@
+{% extends 'base.html' %}
+{% block header %}
+<title>ログ照会（管理者用）</title>
+{% endblock %}
+
+{% block customcss %}
+{% load static %}
+<link rel="stylesheet" type="text/css" href="{% static 'css/tabulator.css' %}">
+{% endblock customcss %}
+
+{% block button_area %}
+<div class="container-fluid">
+  <h4 style="text-align: center; margin-top: 1vh;">ログ照会（管理者用）</h4><hr noshade style="margin: 0;">
+
+    <!-- ボタンエリア -->
+    <div class="text-center button_area">
+      <a href="{% url 'maintenanceIndex' %}" class="btn btn_close" style="margin: 0.1% 0.5% 0.2% 0.5%; padding:0.1% 1.5% 0 1.5%;"><i class="fas fa-times"></i> 閉じる</a>
+    </div>
+</div>
+{% endblock button_area %}
+
+{% block content %}
+  <form action="{% url 'SystemLog' %}" method="post" class="form-inline">
+    {% csrf_token %}
+    <div class="row mt-1 mb-1">
+      <div class="col">
+        <div class="input-group">
+          <div class="input-group-prepend">
+            <div class="input-group-text">{{ select_form.log_date.label }}</div>
+          </div>
+          {{ select_form.log_date }}
+        </div>
+      </div>
+    </div>
+      <button type="submit" class="btn btn_submit my-1 ml-1"><i class="fas fa-search"></i> 表示</button>
+  </form>
+</div>
+<div class="container-fluid">
+<table id="system_table">
+  <thead>
+    <tr>
+      <th>イベント発生日時</th>
+      <th>状態</th>
+      <th>プログラム名</th>
+      <th>結果</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for item in object_list %}
+        <tr>
+            <td>{{ item.ASCTIME }}</td>
+            <td>{{ item.STATUS }}</td>
+            <td>{{ item.LOGIC }}</td>
+            <td>{{ item.OUTPUT }}</td>
+        </tr>
+    {% endfor %}
+  </tbody>
+</table>
+</div>
+{% endblock content %}
+
+{% block script %}
+{% load static %}
+<script type="text/javascript" src="{% static 'js/polyfill.min.js' %}"></script>
+<script type="text/javascript" src="{% static 'js/tabulator.js' %}"></script>
+<script type="text/javascript">
+// システムログ
+var system_table = new Tabulator("#system_table", {
+    height:"800px",
+    layout:"fitColumns",
+    tooltips:true,
+    columns:[
+    {title:"イベント発生日時", field:"ASCTIME", width:150, headerFilter:"input"},
+    {title:"状態", field:"STATUS", width:70, headerFilter:"input"},
+    {title:"プログラム名", field:"LOGIC", width:200, headerFilter:"input"},
+    {title:"結果", field:"OUTPUT", headerFilter:"input"},
+    ],
+});
+</script>
+{% endblock script %}

@@ -1,0 +1,65 @@
+{% extends 'base.html' %}
+
+{% block customcss %}
+{% load static %}
+<link rel="stylesheet" type="text/css" href="{% static 'css/tabulator.css' %}">
+{% endblock customcss %}
+
+{% block header %}
+<title>ログ照会（ユーザー用）</title>
+{% endblock header %}
+
+{% block button_area %}
+  <div class="container-fluid">
+    <h4 style="text-align: center; margin-top: 1vh;">ログ照会（ユーザー用）</h4><hr noshade style="margin: 0;">
+
+    <!-- ボタンエリア -->
+    <div class="text-center button_area">
+      <a href="{% url 'maintenanceIndex' %}" class="btn btn_close" style="margin: 0.1% 0.5% 0.2% 0.5%; padding:0.1% 1.5% 0 1.5%;"><i class="fas fa-times"></i> 閉じる</a>
+    </div>
+  </div>
+{% endblock button_area %}
+
+{% block content %}
+<div class="container-fluid">  
+    <table id="userlog_table">
+      <thead>
+        <tr>
+          <th>処理名</th>
+          <th>開始日時</th>
+          <th>終了日時</th>
+          <th>コメント</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for item in obj %}
+          <tr>
+          　<td>{{ item.CODE }}</a></td>
+            <td>{{ item.STARTDATE|date:"Y-m-j H:i:s" }}</a></td>
+            <td>{{ item.ENDDATE|date:"Y-m-j H:i:s" }}</a></td>
+            <td>{{ item.COMMENT }}</a></td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+{% endblock content %}
+
+{% block script %}
+{% load static %}
+<script type="text/javascript" src="{% static 'js/polyfill.min.js' %}"></script>
+<script type="text/javascript" src="{% static 'js/tabulator.js' %}"></script>
+<script type="text/javascript">
+// ユーザーログ
+var userlog_table = new Tabulator("#userlog_table", {
+    height:"800px",
+    layout:"fitColumns",
+    columns:[
+    {title:"処理名", field:"code"},
+    {title:"開始日時", field:"STARTDATE"},
+    {title:"終了日時", field:"ENDDATE"},
+    {title:"コメント", field:"COMMENT"},
+    ],
+});
+</script>
+{% endblock script %}

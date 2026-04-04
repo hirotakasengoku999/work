@@ -1,0 +1,17 @@
+{% extends 'base.html' %}
+
+{% block header %}
+    <title>結果</title>
+{% endblock %}
+
+{% block content %}
+    <div class="container">   
+        {% if predict_messe %}
+          <div class="proc-flame">
+            <h5>{{ predict_messe }}</h5>
+          </div>
+        {% endif %}
+    </div>
+
+
+{% endblock content %}

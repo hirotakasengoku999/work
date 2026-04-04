@@ -1,0 +1,121 @@
+<!doctype html>
+<html lang="ja">
+  <head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+
+    <!-- Bootstrap CSS -->
+    {% load static %}
+    <link rel="stylesheet" type="text/css" href="{% static 'css/sanitize.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'css/bootstrap.min.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'css/style.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'css/fontawesome-free-5.15.1-web/css/all.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'css/loading.css' %}">
+
+    {% block customcss %}
+    {% endblock customcss %}
+    {% block header %}
+    {% endblock header %}
+  </head>
+  <body>
+
+  <div class="fixed-top bg-white">
+    <header class="flex flex-equal-justified flex-center">
+      <a class="ml-3" href="{% url 'indexview' %}" style="text-decoration: none; color: #fff;">
+      <h4>
+        <i class="fas fa-home"></i>
+      </h4>
+      </a>
+      <ul class="flex flex-horizontal" style="margin-top: 3px;">
+        <li>
+          <i class="fas fa-user"></i>
+          {{login_user}}
+        </li>
+        <li>
+          <a href="{% url 'logout' %}">
+            <i class="fas fa-sign-out-alt"></i>
+            ログアウト
+          </a>
+        </li>
+      </ul>
+    </header>
+    <nav>
+      <ul>
+        {% if user_authority in menu_info.0.menu_auth %}
+        <li>
+          <a href="{% url 'createmodel' %}" id="createmodelview">
+          <i class="fas fa-microchip"></i>
+          {{menu_info.0.menu_name}}
+          </a>
+        </li>
+        {% endif %}
+        {% if user_authority in menu_info.1.menu_auth %}
+        <li>
+          <a href="{% url 'predict' %}" id="predictview">
+            <i class="fas fa-share-square"></i>
+            {{menu_info.1.menu_name}}
+          </a>
+        </li>
+        {% endif %}
+        {% if user_authority in menu_info.2.menu_auth %}
+        <li>
+          <a href="{% url 'test_paginator'%}" id="resultview">
+            <i class="far fa-list-alt"></i>
+            {{menu_info.2.menu_name}}
+          </a>
+        </li>
+        {% endif %}
+        {% if user_authority in menu_info.4.menu_auth %}
+        <li>
+          <a href="{% url 'chart' 'CODENAME' %}"  id="chart">
+            <i class="fas fa-chart-bar"></i>
+            {{menu_info.4.menu_name}}
+          </a>
+        </li>
+        {% endif %}
+        {% if user_authority in menu_info.5.menu_auth %}
+        <li>
+          <a href="{% url 'inspection_index' %}" target="_blank">
+            <i class="fas fa-hospital-user"></i>
+            {{menu_info.5.menu_name}}
+          </a>
+        </li>
+        {% endif %}
+        {% if user_authority in menu_info.3.menu_auth %}
+        <li>
+          <a href="{% url 'maintenanceIndex' %}">
+            <i class="fas fa-cog"></i>
+            {{menu_info.3.menu_name}}
+          </a>
+        </li>
+        {% endif %}
+      </ul>
+    </nav>
+    <div>
+    {% block button_area %}
+    {% endblock button_area %}
+    </div>
+  </div>
+    <div class="container text-center">
+      <!-- ローディング画面 -->
+      <div class="loading" id="loading_anime">
+        <i class="fas fa-circle-notch fa-10x fa-spin" id="loading_spinner"></i>
+      </div>
+    </div>
+    <div style="padding-top: 145px;">
+    {% block content %}
+    {% endblock content %}
+    </div>
+
+    <!-- Optional JavaScript -->
+    <!-- jQuery first, then Popper.js, then Bootstrap JS -->
+    <script type="text/javascript" src="{% static 'js/jquery-3.5.1.js' %}"></script>
+    <script type="text/javascript" src="{% static 'js/bootstrap.bundle.min.js' %}"></script>
+    <script type="text/javascript" src="{% static 'js/bootstrap-multiselect.js' %}"></script>
+    <script type="text/javascript" src="{% static 'js/original.js' %}"></script>
+    {% block script %}
+    {% endblock script %}
+  </body>
+</html>
