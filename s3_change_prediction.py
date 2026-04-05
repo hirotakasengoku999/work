@@ -209,6 +209,7 @@ def call(params, logger, in_targets):
         if not isinstance(indf, pd.DataFrame):
             return 0
 
+        indf = indf.drop(required_codes, axis=1, errors='ignore')
         usec = [columns1[1], columns1[0]] + required_codes
         df_tmp = indf_s.loc[:, indf_s.columns.intersection(usec)].reindex(columns=usec)
         df_tmp[required_codes] = df_tmp[required_codes].fillna(0).astype('int')
@@ -222,8 +223,7 @@ def call(params, logger, in_targets):
         # required_codesのいずれか1つでも算定があれば合計 > 0 となる
         df_tmp['required_sum'] = df_tmp[required_codes].sum(axis=1)
 
-        new_df = pd.merge(indf, df_tmp[[columns1[1], columns1[0], 'required_sum']], on=[columns1[1], columns1[0]], how='left')
-        new_df['required_sum'] = new_df['required_sum'].fillna(0)
+        new_df = pd.merge(indf, df_tmp, on=[columns1[1], columns1[0]], how='left')
         new_df[columns2[0]] = new_df[columns1[2]]
         new_df.loc[new_df['required_sum'] == 0, columns1[2]] = 0
         Output(new_df, targetNo)
