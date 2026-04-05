@@ -13,7 +13,7 @@ import pandas as pd
 from pathlib import Path
 
 # ---- パス設定（環境に応じて変更） ----
-BASE_DIR = Path(r"C:\aibrain_main\aireceiptproject")
+BASE_DIR = Path(r"C:\aibrain_main\aireceiptproject\aireceipttesuto")
 result_path = BASE_DIR / "work/prediction/7_1/140033770_result.csv"
 si_path = BASE_DIR / "work/prediction/3_2/診療行為.pickle"
 
@@ -47,8 +47,9 @@ df_tmp = df_tmp.fillna(0)
 df_tmp['required_sum'] = df_tmp[required_codes].sum(axis=1)
 
 # ---- result_df とマージして required_sum を付与 ----
+ # Check5修正後のresult.csvにはrequired_sum列が含まれるため、列衝突を防いで事前にdrop
 merged = pd.merge(
-    result_df,
+    result_df.drop('required_sum', axis=1, errors='ignore'),
     df_tmp[[col_date, col_karute, 'required_sum']],
     on=[col_date, col_karute],
     how='left'
